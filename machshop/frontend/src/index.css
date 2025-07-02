@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Set the website background to black and text to white */
+body {
+  background: linear-gradient(135deg, #B0E0E6, #98FB98, #6B8E23);
+
+
+
+    color: white; /* Ensures text remains readable */
+}
+
+/* Ensure links highlight properly */
+a.active hr {
+    display: block;
+}
+
+/* Apply default font */
+* {
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Class for Prata font */
+.prata-regular {
+    font-family: "Prata", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* Mobile styling for active links */
+@media (max-width: 640px) {
+    a.active {
+        background-color: black;
+        color: white;
+    }
+}
