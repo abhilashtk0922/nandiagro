@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
 import userRouter from "./routes/userRoute.js";
@@ -13,6 +16,10 @@ import videoRouter from "./routes/videoRoute.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
+// Resolve __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Verify environment variables
 console.log("Checking environment variables...");
 if (!process.env.JWT_SECRET) {
@@ -20,9 +27,7 @@ if (!process.env.JWT_SECRET) {
   process.exit(1);
 }
 if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) {
-  console.error(
-    "ADMIN_EMAIL or ADMIN_PASSWORD is not set in environment variables"
-  );
+  console.error("ADMIN_EMAIL or ADMIN_PASSWORD is not set in environment variables");
   process.exit(1);
 }
 
@@ -36,7 +41,7 @@ try {
   process.exit(1);
 }
 
-// Connect to cloudinary
+// Connect to Cloudinary
 console.log("Connecting to cloudinary...");
 try {
   await connectCloudinary();
@@ -46,11 +51,22 @@ try {
   process.exit(1);
 }
 
-// middlewares
+// Middleware
 app.use(express.json());
 app.use(cors());
 
-// Request logging middleware
+// ✅ Serve static files from /public
+app.use(express.static(path.join(__dirname, "public")));
+
+// ✅ Root welcome route
+app.get("/", (req, res) => {
+  res.send("🎉 Welcome to the NandiAgro Backend API!");
+});
+
+// ✅ Optional: prevent favicon 404
+app.get("/favicon.ico", (req, res) => res.status(204).end());
+
+// Request logging
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   console.log("Headers:", JSON.stringify(req.headers, null, 2));
@@ -58,7 +74,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check route
+// Health check
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
@@ -67,7 +83,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-// api endpoints
+// API routes
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
@@ -79,7 +95,7 @@ app.get("/api/test", (req, res) => {
   res.json({ success: true, message: "API is working" });
 });
 
-// Error handling middleware
+// Error handling
 app.use((err, req, res, next) => {
   console.error("Error:", err);
   res.status(500).json({
@@ -104,6 +120,7 @@ const server = app.listen(port, () => {
   console.log(`Server started on PORT: ${port}`);
   console.log("Environment:", process.env.NODE_ENV || "development");
   console.log("Available routes:");
+  console.log("- GET    /");
   console.log("- GET    /health");
   console.log("- GET    /api/test");
   console.log("- GET    /api/videos/test");
@@ -122,7 +139,7 @@ server.on("error", (error) => {
   process.exit(1);
 });
 
-// Handle process termination
+// Graceful shutdown
 process.on("SIGTERM", () => {
   console.log("SIGTERM received. Shutting down gracefully...");
   server.close(() => {
