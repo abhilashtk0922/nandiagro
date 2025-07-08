@@ -6,7 +6,7 @@ const NewsletterBox = () => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch("https://mail.nandi-agrotech.in/api/subscribe", {
+      const response = await fetch("https://mail.nandiagrotech.com/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
