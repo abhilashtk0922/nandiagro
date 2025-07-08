@@ -11,7 +11,7 @@ import videoRouter from "./routes/videoRoute.js";
 
 // App Config
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 // Verify environment variables
 console.log("Checking environment variables...");
